@@ -56,7 +56,7 @@ class Ball:
 
 class Paddle:
     WIDTH = 20
-    HEIGHT = 400
+    HEIGHT = 200
 
     def __init__(self, y):
         self.y = y
