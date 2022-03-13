@@ -14,14 +14,13 @@ class Ball:
 
     RADIUS = 20
 
-    #this is what runs when we make a Ball(...)
-    def __init__(self, x, y, vx, vy, color, bg_color):
+    # this is what runs when we make a Ball(...)
+    def __init__(self, x, y, vx, vy, color):
         self.x = x
         self.y = y
         self.vx = vx
         self.vy = vy
         self.color = color
-        self.bg_color = bg_color
 
     def show(self, color):
 
@@ -40,16 +39,15 @@ class Ball:
         newy = self.y + self.vy
 
         if newx <= BORDER + self.RADIUS:
-            self.vx = -self.vx *1.1
+            self.vx = -self.vx * 1.1
             self.color = make_random_color()
         elif self.is_on_paddle():
-            self.vx = -abs(self.vx) 
+            self.vx = -abs(self.vx)
             self.color = make_random_color()
         elif newy < BORDER + self.RADIUS or newy > HEIGHT - BORDER - self.RADIUS:
             self.vy = -self.vy
             self.color = make_random_color()
 
-        self.show(self.bg_color)
         self.x = newx
         self.y = newy
         self.show(self.color)
@@ -70,7 +68,13 @@ class Paddle:
     def update(self):
         global fgColor, bgColor
         self.show(bgColor)
-        self.y = pygame.mouse.get_pos()[1]
+        newy = pygame.mouse.get_pos()[1]
+        if (newy >= HEIGHT - BORDER - Paddle.HEIGHT//2):
+            self.y =HEIGHT - BORDER - Paddle.HEIGHT//2
+        elif newy <= BORDER + Paddle.HEIGHT//2:
+            self.y = BORDER + Paddle.HEIGHT//2
+        else:
+            self.y = pygame.mouse.get_pos()[1]
         self.show(fgColor)
 
 
@@ -79,18 +83,20 @@ def make_random_color():
     """
     returns a random pygame.color
     """
-    R = randint(50,255)
-    B = randint(50,255)
-    G = randint(50,255)
+    R = randint(50, 255)
+    B = randint(50, 255)
+    G = randint(50, 255)
 
-    return pygame.Color(R,B,G)
-    
+    return pygame.Color(R, B, G)
 
-my_color = pygame.Color(0,255,255)
+
+my_color = pygame.Color(0, 255, 255)
 
 rumpesprett = Paddle(HEIGHT//2)
-ballplay = Ball(3*WIDTH//5 - Ball.RADIUS, HEIGHT//2, -VELOCITY, -VELOCITY, make_random_color(), pygame.Color("black"))
-ballplay2 = Ball(3*WIDTH//4 - Ball.RADIUS, 3*HEIGHT//4, -VELOCITY, -VELOCITY, make_random_color() , pygame.Color("black"))
+balls = []
+balls.append(Ball(3*WIDTH//5 - Ball.RADIUS, HEIGHT//2, - VELOCITY, -VELOCITY, make_random_color()))
+
+balls.append(Ball(3*WIDTH//4 - Ball.RADIUS, 3*HEIGHT//4, - VELOCITY, -VELOCITY, make_random_color()))
 # Draw scenario
 pygame.init()
 
@@ -99,13 +105,17 @@ bg_image = pygame.image.load("bgSpace.png")
 bgColor = pygame.Color("black")
 fgColor = pygame.Color("magenta")
 
-pygame.draw.rect(screen, fgColor, pygame.Rect(0, 0, WIDTH, BORDER))
-pygame.draw.rect(screen, fgColor, pygame.Rect(0, 0, BORDER, HEIGHT))
-pygame.draw.rect(screen, fgColor, pygame.Rect(0, HEIGHT - BORDER, WIDTH, BORDER))
+def draw_border(color):
+    pygame.draw.rect(screen, color, pygame.Rect(0, 0, WIDTH, BORDER))
+    pygame.draw.rect(screen, color, pygame.Rect(0, 0, BORDER, HEIGHT))
+    pygame.draw.rect(screen, color, pygame.Rect(
+        0, HEIGHT - BORDER, WIDTH, BORDER))
 
 
-ballplay.show(fgColor)
-ballplay2.show(fgColor)
+
+for ball in balls:
+    ball.show(fgColor)
+
 rumpesprett.show(fgColor)
 
 while True:
@@ -113,11 +123,12 @@ while True:
     if e.type == pygame.QUIT:
         break
 
-    
     pygame.display.flip()
-    screen.blit(bg_image, (0,0))
-    ballplay.update()
-    ballplay2.update()
+    screen.blit(bg_image, (0, 0))
+    draw_border(pygame.Color(255,100,255))
+
+    for ball in balls:
+        ball.update()
     rumpesprett.update()
 
 
