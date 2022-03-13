@@ -14,6 +14,7 @@ class Ball:
 
     RADIUS = 20
 
+    #this is what runs when we make a Ball(...)
     def __init__(self, x, y, vx, vy, color, bg_color):
         self.x = x
         self.y = y
@@ -39,10 +40,10 @@ class Ball:
         newy = self.y + self.vy
 
         if newx <= BORDER + self.RADIUS:
-            self.vx = -self.vx
+            self.vx = -self.vx *1.1
             self.color = make_random_color()
         elif self.is_on_paddle():
-            self.vx = -abs(self.vx)
+            self.vx = -abs(self.vx) 
             self.color = make_random_color()
         elif newy < BORDER + self.RADIUS or newy > HEIGHT - BORDER - self.RADIUS:
             self.vy = -self.vy
@@ -94,7 +95,7 @@ ballplay2 = Ball(3*WIDTH//4 - Ball.RADIUS, 3*HEIGHT//4, -VELOCITY, -VELOCITY, ma
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
+bg_image = pygame.image.load("bgSpace.png")
 bgColor = pygame.Color("black")
 fgColor = pygame.Color("magenta")
 
@@ -112,7 +113,9 @@ while True:
     if e.type == pygame.QUIT:
         break
 
+    
     pygame.display.flip()
+    screen.blit(bg_image, (0,0))
     ballplay.update()
     ballplay2.update()
     rumpesprett.update()
